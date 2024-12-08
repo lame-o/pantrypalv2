@@ -75,7 +75,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-green-50 flex flex-col items-center">
       <header className="w-full bg-green-700 p-4 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-green-50">🍽️ PantryPal</h1>
+        <h1 className="text-3xl font-bold text-green-50">🍽️ PantryPall</h1>
         <AboutModal />
       </header>
       
