@@ -181,9 +181,19 @@ export default function Home() {
         </div>
 
         {error && (
-          <div className="text-red-600 text-center mb-8">
-            {error}
-          </div>
+          <Card className="mb-8 bg-red-50 border-red-200">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-2">
+                <span className="text-red-600">⚠️</span>
+                <p className="text-red-600 font-medium">{error}</p>
+              </div>
+              <p className="text-red-500 mt-2 text-sm">
+                {error.includes('took too long') ? 
+                  'The request timed out. Please try again with fewer ingredients.' :
+                  'Please try again or reset and start over.'}
+              </p>
+            </CardContent>
+          </Card>
         )}
 
         <div className="grid gap-8 md:grid-cols-2">
