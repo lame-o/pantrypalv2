@@ -20,6 +20,7 @@ export default function Home() {
   const [currentIngredients, setCurrentIngredients] = useState('')
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const addIngredients = () => {
     if (currentIngredients.trim() !== '') {
@@ -40,15 +41,25 @@ export default function Home() {
   }
 
   const handleGenerateRecipes = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
+    setError(null);
+    // Clear previous recipes before generating new ones
+    setRecipes([]);
+    
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ ingredients }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       const data = await response.json();
       
@@ -58,19 +69,30 @@ export default function Home() {
           setRecipes(parsedRecipes);
         } catch (error) {
           console.error('Failed to parse recipes:', error);
-          setRecipes([]);
+          setError('Failed to parse the recipe data. Please try again.');
         }
       } else {
         console.error('Failed to generate recipes:', data.error);
-        setRecipes([]);
+        setError(data.error || 'Failed to generate recipes. Please try again.');
       }
     } catch (error) {
-      console.error('Error:', error);
-      setRecipes([]);
+      if (error.name === 'AbortError') {
+        setError('Request took too long. Please try again.');
+      } else {
+        console.error('Error:', error);
+        setError('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
-  }
+  };
+
+  const handleReset = () => {
+    setIngredients([]);
+    setCurrentIngredients('');
+    setRecipes([]);
+    setError(null);
+  };
 
   return (
     <div className="min-h-screen bg-green-50 flex flex-col items-center">
@@ -140,13 +162,29 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Button 
-          onClick={handleGenerateRecipes} 
-          className="w-full mb-8 bg-green-600 hover:bg-green-700 text-white text-lg py-6"
-          disabled={ingredients.length === 0 || isLoading}
-        >
-          {isLoading ? 'Generating Recipes...' : 'Generate Recipes 👨‍🍳'}
-        </Button>
+        <div className="flex gap-4 mb-8">
+          <Button 
+            onClick={handleGenerateRecipes} 
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white text-lg py-6"
+            disabled={ingredients.length === 0 || isLoading}
+          >
+            {isLoading ? 'Generating Recipes...' : 'Generate Recipes 👨‍🍳'}
+          </Button>
+          
+          <Button
+            onClick={handleReset}
+            className="bg-red-100 hover:bg-red-200 text-red-600 text-lg py-6 px-4"
+            disabled={isLoading}
+          >
+            Reset All 🔄
+          </Button>
+        </div>
+
+        {error && (
+          <div className="text-red-600 text-center mb-8">
+            {error}
+          </div>
+        )}
 
         <div className="grid gap-8 md:grid-cols-2">
           {recipes.map((recipe, index) => (
