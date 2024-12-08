@@ -12,7 +12,7 @@ const commonIngredients = ['🥛 Milk', '🥚 Eggs', '🍞 Bread', '🥣 Cereal'
 interface Recipe {
   name: string;
   ingredients: string[];
-  instructions: string;
+  instructions: string[];
 }
 
 export default function Home() {
@@ -199,24 +199,26 @@ export default function Home() {
         <div className="grid gap-8 md:grid-cols-2">
           {recipes.map((recipe, index) => (
             <Card key={index} className="bg-white border-2 border-green-500 shadow-lg overflow-hidden">
-              <CardHeader className="border-b border-green-100 bg-green-50">
-                <CardTitle className="text-2xl font-bold text-green-800">{recipe.name}</CardTitle>
-                <CardDescription className="mt-2">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-green-700">{recipe.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
                   <div className="font-semibold text-green-700 mb-2">Ingredients:</div>
-                  <ul className="list-disc list-inside space-y-1 text-green-600">
+                  <ul className="list-disc list-inside space-y-1 text-green-700">
                     {recipe.ingredients.map((ingredient, i) => (
-                      <li key={i}>{ingredient}</li>
+                      <li key={i} className="pl-2">{ingredient}</li>
                     ))}
                   </ul>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <div className="font-semibold text-green-700 mb-2">Instructions:</div>
-                <ol className="list-decimal list-inside space-y-2 text-green-700 leading-relaxed">
-                  {recipe.instructions.split(/\d+\./).filter(step => step.trim()).map((step, i) => (
-                    <li key={i} className="pl-2">{step.trim()}</li>
-                  ))}
-                </ol>
+                </div>
+                <div>
+                  <div className="font-semibold text-green-700 mb-2">Instructions:</div>
+                  <ol className="list-decimal list-inside space-y-2 text-green-700 leading-relaxed">
+                    {recipe.instructions.map((step, i) => (
+                      <li key={i} className="pl-2">{step}</li>
+                    ))}
+                  </ol>
+                </div>
               </CardContent>
             </Card>
           ))}
